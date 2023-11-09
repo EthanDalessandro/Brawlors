@@ -1,18 +1,23 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class ProjectileBehaviour : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    private Rigidbody body;
+
+    [Header("Projectile Properties")]
+    [SerializeField] private float flightSpeed;
+
+    private void Awake()
     {
-        
+        body = GetComponent<Rigidbody>();
+        body.AddForce(transform.forward * flightSpeed, ForceMode.Impulse);
     }
 
-    // Update is called once per frame
-    void Update()
+    private void OnTriggerEnter(Collider other)
     {
-        
+        if(other.CompareTag("Ground") || other.CompareTag("Obstacle"))
+        {
+            Destroy(gameObject);
+        }
     }
 }
