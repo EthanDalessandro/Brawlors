@@ -14,7 +14,10 @@ public class PlayerMovement : MonoBehaviour
 
     [Header("PlayerProperties")]
     [SerializeField, Range(0, 100)] private float moveSpeed;
+    [SerializeField] private float moveSpeedTransitionForce;
     private float moveSpeedOrigin;
+    private float moveSpeedSmoothDamp;
+
     [SerializeField, Range(0, 100)] private float moveSpeedWhileShooting;
     [SerializeField, Range(0, 100)] private float rotateSpeed;
     [SerializeField, Range(0, 100)] private float jumpForce;
@@ -23,6 +26,7 @@ public class PlayerMovement : MonoBehaviour
 
     [Header("Player Component")]
     [SerializeField] private GameObject projectilePrefab;
+    [SerializeField] private Transform projectileSpawnPosition;
     private Rigidbody body;
 
     private void Awake()
@@ -36,26 +40,28 @@ public class PlayerMovement : MonoBehaviour
         PlayerMove();
         PlayerRotationAndAim();
         Shooting();
-        Debug.DrawRay(transform.position, target, Color.yellow);    
+        Debug.DrawRay(transform.position, target, Color.yellow);
     }
 
     private void Shooting()
     {
         if (shooting)
-        { 
-            if(moveSpeed != moveSpeedWhileShooting)
-            {
-                StartCoroutine(moveSpeedSlowing());
-            }
+        {
+            moveSpeed = Mathf.SmoothDamp(moveSpeed, moveSpeedWhileShooting, ref moveSpeedSmoothDamp, moveSpeedTransitionForce);
+            //if(moveSpeed != moveSpeedWhileShooting)
+            //{
+            //    StartCoroutine(moveSpeedSlowing());
+            //}
             shootDelay += Time.fixedDeltaTime;
             if (shootDelay >= fireRate)
             {
-                GameObject actualProjectile = Instantiate(projectilePrefab, transform.position, Quaternion.LookRotation(target));
+                GameObject actualProjectile = Instantiate(projectilePrefab, projectileSpawnPosition.position, Quaternion.LookRotation(target));
                 shootDelay = 0;
             }
         }
         else
         {
+            moveSpeed = Mathf.SmoothDamp(moveSpeed, moveSpeedOrigin, ref moveSpeedSmoothDamp, moveSpeedTransitionForce);
             shootDelay += Time.fixedDeltaTime;
             shootDelay = Mathf.Clamp(shootDelay, 0, fireRate);
         }
@@ -78,6 +84,7 @@ public class PlayerMovement : MonoBehaviour
     private void PlayerMove()
     {
         body.velocity = new Vector3(moveDirection.x * moveSpeed, body.velocity.y, moveDirection.y * moveSpeed);
+        //transform.position += new Vector3(moveDirection.x * moveSpeed * Time.fixedDeltaTime, 0, moveDirection.y * moveSpeed * Time.fixedDeltaTime);
     }
 
     public void Movement(InputAction.CallbackContext context)

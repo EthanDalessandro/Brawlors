@@ -49,6 +49,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   flightSpeed: 70
+  actualColor: {r: 1, g: 0, b: 0, a: 1}
+  splashEffectPrefab: {fileID: 6943581623206960981, guid: d6da0782513546d438fc3c29e511d75c,
+    type: 3}
 --- !u!33 &1331424913863076979
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -114,7 +117,7 @@ SphereCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
